@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DRAVYA | Architecture, Construction & Material Atelier</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['Cinzel', 'serif'],
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        studio: {
+                            bg: '#08090C',
+                            surface: '#0F1117',
+                            card: 'rgba(255, 255, 255, 0.03)',
+                            border: 'rgba(255, 255, 255, 0.12)',
+                            accent: '#D4AF37',
+                            accentLight: '#F3E5AB',
+                            muted: '#94A3B8'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Custom Scrollbar & Gloss Panels */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #08090C; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(212, 175, 55, 0.6); }
+
+        .gloss-panel {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.015) 100%);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
+        }
+
+        .gloss-panel-hover {
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .gloss-panel-hover:hover {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.03) 100%);
+            border-color: rgba(212, 175, 55, 0.4);
+            box-shadow: 0 12px 40px 0 rgba(212, 175, 55, 0.15), inset 0 1px 0 0 rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+        }
+
+        .gloss-btn {
+            background: linear-gradient(135deg, #E5C158 0%, #D4AF37 50%, #A6831A 100%);
+            box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.5), 0 4px 20px rgba(212, 175, 55, 0.25);
+            transition: all 0.3s ease;
+        }
+        .gloss-btn:hover {
+            box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.7), 0 6px 28px rgba(212, 175, 55, 0.5);
+            transform: translateY(-1px);
+        }
+
+        .gloss-badge {
+            background: rgba(212, 175, 55, 0.1);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-link.active {
+            color: #D4AF37 !important;
+            font-weight: 600;
+        }
+
+        /* FAQ Accordion */
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s cubic-bezier(0, 1, 0, 1);
+        }
+        .faq-item.active .faq-answer {
+            max-height: 500px;
+            transition: max-height 0.4s ease-in-out;
+        }
+        .faq-item.active .faq-icon {
+            transform: rotate(180deg);
+            color: #D4AF37;
+        }
+
+        body.modal-open { overflow: hidden; }
+    </style>
+</head>
+<body class="bg-studio-bg text-white font-sans antialiased selection:bg-studio-accent selection:text-black min-h-screen relative overflow-x-hidden">
+
+    <!-- Ambient Gloss Lighting Background Orbs -->
+    <div class="fixed top-[-10%] left-[-10%] w-[600px] h-[600px] bg-studio-accent/10 rounded-full blur-[160px] pointer-events-none z-0"></div>
+    <div class="fixed bottom-[5%] right-[-5%] w-[700px] h-[700px] bg-amber-900/10 rounded-full blur-[180px] pointer-events-none z-0"></div>
+
+    <!-- Navigation Bar -->
+    <header class="fixed top-0 left-0 w-full z-40 transition-all duration-300 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4">
+            <div class="gloss-panel rounded-full px-6 h-16 flex items-center justify-between">
+                <!-- Brand Identity -->
+                <a href="#home" class="font-serif text-lg tracking-[0.2em] font-semibold text-white flex flex-col group">
+                    <span class="group-hover:text-studio-accent transition-colors">DRAVYA</span>
+                    <span class="text-studio-accent font-sans font-light text-[8px] tracking-[0.25em] -mt-1 uppercase">Architecture & Build</span>
+                </a>
+
+                <!-- Navigation Links -->
+                <nav id="navbar-links" class="hidden lg:flex items-center space-x-5 text-[10px] tracking-[0.18em] uppercase font-medium text-studio-muted">
+                    <a href="#home" class="nav-link hover:text-white transition-colors active">Home</a>
+                    <a href="#projects" class="nav-link hover:text-white transition-colors">Projects</a>
+                    <a href="#services" class="nav-link hover:text-white transition-colors">Services</a>
+                    <a href="#library" class="nav-link hover:text-white transition-colors text-studio-accent flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-studio-accent animate-ping"></span>Library
+                    </a>
+                    <a href="#journal" class="nav-link hover:text-white transition-colors">Journal</a>
+                    <a href="#about" class="nav-link hover:text-white transition-colors">About</a>
+                    <a href="#process" class="nav-link hover:text-white transition-colors">Process</a>
+                    <a href="#faq" class="nav-link hover:text-white transition-colors">FAQ</a>
+                </nav>
+
+                <!-- Start Project CTA -->
+                <div class="hidden sm:flex items-center gap-4">
+                    <a href="/login" class="text-[10px] tracking-[0.18em] uppercase font-medium text-studio-muted hover:text-studio-accent transition-colors">Staff Login</a>
+                    <a href="#contact" class="gloss-btn text-black font-semibold px-5 py-2.5 text-[11px] tracking-[0.15em] uppercase rounded-full inline-block">
+                        Start a Project
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" aria-label="Toggle Navigation Menu" class="lg:hidden text-white p-2 focus:outline-none">
+                    <svg id="menu-icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    <svg id="menu-icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="mobile-menu" class="hidden lg:hidden mx-4 gloss-panel rounded-2xl p-6 space-y-3 text-xs tracking-[0.2em] uppercase transition-all shadow-2xl">
+            <a href="#home" class="mobile-nav-link block text-studio-muted hover:text-white py-1">Home</a>
+            <a href="#projects" class="mobile-nav-link block text-studio-muted hover:text-white py-1">Projects</a>
+            <a href="#services" class="mobile-nav-link block text-studio-muted hover:text-white py-1">Services</a>
+            <a href="#library" class="mobile-nav-link block text-studio-accent font-semibold py-1">Library (Database)</a>
+            <a href="#journal" class="mobile-nav-link block text-studio-muted hover:text-white py-1">Journal</a>
+            <a href="#about" class="mobile-nav-link block text-studio-muted hover:text-white py-1">About</a>
+            <a href="#process" class="mobile-nav-link block text-studio-muted hover:text-white py-1">Process (01-08)</a>
+            <a href="#faq" class="mobile-nav-link block text-studio-muted hover:text-white py-1">FAQ</a>
+            <a href="/login" class="mobile-nav-link block text-studio-muted hover:text-studio-accent py-1">Staff Login</a>
+            <a href="#contact" class="mobile-nav-link block text-black gloss-btn text-center py-3 rounded-xl font-semibold mt-4">Start a Project →</a>
+        </div>
+    </header>
+
+    <!-- SECTION 1: HOME -->
+    <section id="home" class="relative min-h-screen flex items-center pt-28 pb-16 z-10">
+        <div class="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            
+            <div class="lg:col-span-7 space-y-8">
+                <div class="inline-flex items-center space-x-2 gloss-badge px-4 py-2 rounded-full text-xs text-studio-accent tracking-widest uppercase font-mono">
+                    <span class="w-2 h-2 rounded-full bg-studio-accent animate-pulse"></span>
+                    <span>Matter • Form • Space</span>
+                </div>
+                
+                <h1 class="font-serif text-4xl sm:text-6xl lg:text-7xl font-normal tracking-tight text-white leading-[1.1]">
+                    Connecting Design Thinking with <span class="bg-gradient-to-r from-white via-slate-200 to-studio-accent bg-clip-text text-transparent">Physical Making.</span>
+                </h1>
+
+                <p class="text-studio-muted text-base sm:text-lg max-w-xl font-light leading-relaxed">
+                    Dravya is an architectural practice and design-build studio. We bridge conceptual rigor, regional material research, and execution precision across buildings, interiors, and physical details.
+                </p>
+
+                <div class="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
+                    <a href="#contact" class="gloss-btn text-black px-8 py-4 text-xs tracking-[0.2em] uppercase font-semibold text-center rounded-xl">
+                        Start a Project
+                    </a>
+                    <a href="#projects" class="gloss-panel gloss-panel-hover text-white px-8 py-4 text-xs tracking-[0.2em] uppercase text-center rounded-xl">
+                        Explore Works
+                    </a>
+                </div>
+
+                <!-- Teasers Grid on Home -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 border-t border-white/10 text-xs font-mono">
+                    <div class="gloss-panel p-4 rounded-xl space-y-1">
+                        <span class="text-studio-accent uppercase font-semibold text-[10px]">DESIGN-BUILD METHOD</span>
+                        <p class="text-white">Single-Point Accountability</p>
+                    </div>
+                    <div class="gloss-panel p-4 rounded-xl space-y-1">
+                        <span class="text-studio-accent uppercase font-semibold text-[10px]">MATERIAL LIBRARY</span>
+                        <p class="text-white">Slate, Timber & NBC Specs</p>
+                    </div>
+                    <div class="gloss-panel p-4 rounded-xl space-y-1">
+                        <span class="text-studio-accent uppercase font-semibold text-[10px]">EXECUTION PRECISION</span>
+                        <p class="text-white">Idea → Construction</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hero Feature Card -->
+            <div class="lg:col-span-5">
+                <div class="gloss-panel gloss-panel-hover p-4 rounded-2xl group cursor-pointer" onclick="openProjectModal('p1')">
+                    <div class="aspect-[4/5] overflow-hidden rounded-xl relative">
+                        <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80" 
+                             alt="Featured Dravya Project" 
+                             class="w-full h-full object-cover grayscale contrast-125 group-hover:scale-105 group-hover:grayscale-0 transition-all duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
+                        
+                        <div class="absolute bottom-4 left-4 right-4 gloss-panel p-4 rounded-xl space-y-1">
+                            <div class="flex justify-between items-center">
+                                <span class="text-[10px] font-mono text-studio-accent tracking-wider uppercase">FEATURED WORK // ARCHITECTURE</span>
+                                <span class="text-xs text-studio-accent">View Progression ↗</span>
+                            </div>
+                            <p class="font-serif text-lg text-white">Courtyard Pavilion & Slate Mass</p>
+                            <p class="text-xs text-studio-muted">Pokhara Valley, Nepal • Complete Design-Build</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- SECTION 2: PROJECTS -->
+    <section id="projects" class="py-28 max-w-7xl mx-auto px-6 z-10 relative border-t border-white/10">
+        <div class="space-y-12">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-8">
+                <div class="space-y-2">
+                    <span class="text-xs font-mono text-studio-accent tracking-widest uppercase">// Selected Portfolio</span>
+                    <h2 class="font-serif text-3xl sm:text-4xl text-white font-normal">Works & Demonstrations</h2>
+                    <p class="text-studio-muted text-xs font-light">Demonstrating true capability: Idea → Drawings → Materials → Construction → Result.</p>
+                </div>
+                
+                <!-- Project Filters -->
+                <div id="project-filters" class="flex flex-wrap gap-2 text-[11px] tracking-widest uppercase font-mono">
+                    <button class="filter-btn active gloss-btn text-black font-semibold px-4 py-2 rounded-lg transition-all" data-filter="all">All</button>
+                    <button class="filter-btn gloss-panel gloss-panel-hover px-4 py-2 rounded-lg text-studio-muted hover:text-white" data-filter="architecture">Architecture</button>
+                    <button class="filter-btn gloss-panel gloss-panel-hover px-4 py-2 rounded-lg text-studio-muted hover:text-white" data-filter="interiors">Interiors</button>
+                    <button class="filter-btn gloss-panel gloss-panel-hover px-4 py-2 rounded-lg text-studio-muted hover:text-white" data-filter="renovation">Renovation</button>
+                    <button class="filter-btn gloss-panel gloss-panel-hover px-4 py-2 rounded-lg text-studio-muted hover:text-white" data-filter="details">Furniture/Details</button>
+                    <button class="filter-btn gloss-panel gloss-panel-hover px-4 py-2 rounded-lg text-studio-muted hover:text-white" data-filter="concepts">Concepts/Ongoing</button>
+                </div>
+            </div>
+
+            <!-- Projects Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="projects-grid">
+
+                <!-- Project 1 -->
+                <div class="project-card gloss-panel gloss-panel-hover p-4 rounded-2xl group cursor-pointer" data-category="architecture" onclick="openProjectModal('p1')">
+                    <div class="aspect-[16/11] overflow-hidden rounded-xl relative">
+                        <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80" alt="Villa Pravah" class="w-full h-full object-cover grayscale contrast-125 group-hover:scale-105 group-hover:grayscale-0 transition-all duration-700">
+                        <div class="absolute top-3 left-3"><span class="gloss-badge text-studio-accent text-[10px] font-mono px-2.5 py-1 rounded">DESIGN-BUILD</span></div>
+                    </div>
+                    <div class="mt-4 px-2 space-y-1">
+                        <h3 class="font-serif text-lg text-white group-hover:text-studio-accent transition-colors">Courtyard Pavilion & Slate Mass</h3>
+                        <p class="text-xs text-studio-muted">Pokhara Valley • Complete Architecture & Execution</p>
+                    </div>
+                </div>
+
+                <!-- Project 2 -->
+                <div class="project-card gloss-panel gloss-panel-hover p-4 rounded-2xl group cursor-pointer" data-category="renovation" onclick="openProjectModal('p2')">
+                    <div class="aspect-[16/11] overflow-hidden rounded-xl relative">
+                        <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80" alt="Heritage Residence" class="w-full h-full object-cover grayscale contrast-125 group-hover:scale-105 group-hover:grayscale-0 transition-all duration-700">
+                        <div class="absolute top-3 left-3"><span class="gloss-badge text-studio-accent text-[10px] font-mono px-2.5 py-1 rounded">RENOVATION</span></div>
+                    </div>
+                    <div class="mt-4 px-2 space-y-1">
+                        <h3 class="font-serif text-lg text-white group-hover:text-studio-accent transition-colors">Heritage Courtyard House Restoration</h3>
+                        <p class="text-xs text-studio-muted">Lalitpur Core • Existing Timber & Brick Retrofit</p>
+                    </div>
+                </div>
+
+                <!-- Project 3 -->
+                <div class="project-card gloss-panel gloss-panel-hover p-4 rounded-2xl group cursor-pointer" data-category="interiors" onclick="openProjectModal('p3')">
+                    <div class="aspect-[16/11] overflow-hidden rounded-xl relative">
+                        <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1200&q=80" alt="Atelier Lab" class="w-full h-full object-cover grayscale contrast-125 group-hover:scale-105 group-hover:grayscale-0 transition-all duration-700">
+                        <div class="absolute top-3 left-3"><span class="gloss-badge text-studio-accent text-[10px] font-mono px-2.5 py-1 rounded">INTERIORS</span></div>
+                    </div>
+                    <div class="mt-4 px-2 space-y-1">
+                        <h3 class="font-serif text-lg text-white group-hover:text-studio-accent transition-colors">Tactile Lime & Sal Wood Atelier</h3>
+                        <p class="text-xs text-studio-muted">Kathmandu • Interior Design & Custom Furniture</p>
+                    </div>
+                </div>
+
+                <!-- Project 4 -->
+                <div class="project-card gloss-panel gloss-panel-hover p-4 rounded-2xl group cursor-pointer" data-category="details" onclick="openProjectModal('p4')">
+                    <div class="aspect-[16/11] overflow-hidden rounded-xl relative">
+                        <img src="https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=1200&q=80" alt="Timber Fenestration" class="w-full h-full object-cover grayscale contrast-125 group-hover:scale-105 group-hover:grayscale-0 transition-all duration-700">
+                        <div class="absolute top-3 left-3"><span class="gloss-badge text-studio-accent text-[10px] font-mono px-2.5 py-1 rounded">FURNITURE / DETAIL</span></div>
+                    </div>
+                    <div class="mt-4 px-2 space-y-1">
+                        <h3 class="font-serif text-lg text-white group-hover:text-studio-accent transition-colors">Carved Sal Joinery & Screen Details</h3>
+                        <p class="text-xs text-studio-muted">Custom Crafting • Mortise & Tenon Assembly</p>
+                    </div>
+                </div>
+
+                <!-- Project 5 -->
+                <div class="project-card gloss-panel gloss-panel-hover p-4 rounded-2xl group cursor-pointer" data-category="concepts" onclick="openProjectModal('p5')">
+                    <div class="aspect-[16/11] overflow-hidden rounded-xl relative">
+                        <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80" alt="Lumbini Monument" class="w-full h-full object-cover grayscale contrast-125 group-hover:scale-105 group-hover:grayscale-0 transition-all duration-700">
+                        <div class="absolute top-3 left-3"><span class="gloss-badge text-studio-accent text-[10px] font-mono px-2.5 py-1 rounded">ONGOING / CIVIC</span></div>
+                    </div>
+                    <div class="mt-4 px-2 space-y-1">
+                        <h3 class="font-serif text-lg text-white group-hover:text-studio-accent transition-colors">Lumbini Memorial Monolith</h3>
+                        <p class="text-xs text-studio-muted">Lumbini Province • Phase 2 Structural Foundation</p>
+                    </div>
+                </div>
+
+                <!-- Project 6 -->
+                <div class="project-card gloss-panel gloss-panel-hover p-4 rounded-2xl group cursor-pointer" data-category="architecture" onclick="openProjectModal('p6')">
+                    <div class="aspect-[16/11] overflow-hidden rounded-xl relative">
+                        <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80" alt="Cricket Academy Campus" class="w-full h-full object-cover grayscale contrast-125 group-hover:scale-105 group-hover:grayscale-0 transition-all duration-700">
+                        <div class="absolute top-3 left-3"><span class="gloss-badge text-studio-accent text-[10px] font-mono px-2.5 py-1 rounded">ARCHITECTURE</span></div>
+                    </div>
+                    <div class="mt-4 px-2 space-y-1">
+                        <h3 class="font-serif text-lg text-white group-hover:text-studio-accent transition-colors">National Sports Academy Campus</h3>
+                        <p class="text-xs text-studio-muted">Pokhara • Site Masterplan & Structural Layout</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 3: SERVICES -->
+    <section id="services" class="py-28 z-10 relative border-t border-white/10">
+        <div class="max-w-7xl mx-auto px-6 space-y-16">
+            <div class="max-w-2xl space-y-3">
+                <span class="text-xs font-mono text-studio-accent tracking-widest uppercase">// Studio Offerings</span>
+                <h2 class="font-serif text-3xl sm:text-4xl text-white font-normal">What Can Dravya Do For You?</h2>
+                <p class="text-studio-muted text-sm font-light">Comprehensive design and construction capabilities delivered under clear contractual structures.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- Service 1 -->
+                <div class="gloss-panel gloss-panel-hover p-8 rounded-2xl space-y-5 flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <span class="text-xs font-mono text-studio-accent uppercase tracking-widest">01 // ARCHITECTURE</span>
+                        <h3 class="font-serif text-xl text-white">Architectural Design</h3>
+                        <p class="text-studio-muted text-xs font-light leading-relaxed">Full spatial development from site feasibility to building permit approvals and structural detailing.</p>
+                        <ul class="text-xs text-studio-muted font-mono space-y-1.5 pt-2 border-t border-white/10">
+                            <li>• Conceptual & Massing Schemes</li>
+                            <li>• Structural & Electrical Sets</li>
+                            <li>• NBC & Municipal Filings</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Service 2 -->
+                <div class="gloss-panel gloss-panel-hover p-8 rounded-2xl space-y-5 flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <span class="text-xs font-mono text-studio-accent uppercase tracking-widest">02 // INTERIORS</span>
+                        <h3 class="font-serif text-xl text-white">Interior Architecture</h3>
+                        <p class="text-studio-muted text-xs font-light leading-relaxed">Integrated interior environments, spatial proportioning, lighting thermal plans, and custom built-in millwork.</p>
+                        <ul class="text-xs text-studio-muted font-mono space-y-1.5 pt-2 border-t border-white/10">
+                            <li>• Material & Palette Curation</li>
+                            <li>• Lighting & Electrical Details</li>
+                            <li>• Bespoke Joinery Drawings</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Service 3 -->
+                <div class="gloss-panel gloss-panel-hover p-8 rounded-2xl space-y-5 flex flex-col justify-between bg-studio-accent/5 border-studio-accent/30">
+                    <div class="space-y-4">
+                        <span class="text-xs font-mono text-studio-accent uppercase tracking-widest">03 // TURNKEY</span>
+                        <h3 class="font-serif text-xl text-white">Design + Build Execution</h3>
+                        <p class="text-studio-muted text-xs font-light leading-relaxed">Single-point responsibility combining studio design with full on-site construction management, cost control, and craft execution.</p>
+                        <ul class="text-xs text-studio-muted font-mono space-y-1.5 pt-2 border-t border-white/10">
+                            <li>• Fixed Price Turnkey Contracts</li>
+                            <li>• Direct Craftsmen Management</li>
+                            <li>• Zero Design-to-Site Discrepancy</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Service 4 -->
+                <div class="gloss-panel gloss-panel-hover p-8 rounded-2xl space-y-5 flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <span class="text-xs font-mono text-studio-accent uppercase tracking-widest">04 // RESTORATION</span>
+                        <h3 class="font-serif text-xl text-white">Renovation & Retrofit</h3>
+                        <p class="text-studio-muted text-xs font-light leading-relaxed">Adaptive reuse of heritage and existing structures. Modernization of building envelopes and structural reinforcing.</p>
+                        <ul class="text-xs text-studio-muted font-mono space-y-1.5 pt-2 border-t border-white/10">
+                            <li>• Seismic Retrofitting Studies</li>
+                            <li>• Existing Structure Assessment</li>
+                            <li>• Vernacular Timber Repair</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Service 5 -->
+                <div class="gloss-panel gloss-panel-hover p-8 rounded-2xl space-y-5 flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <span class="text-xs font-mono text-studio-accent uppercase tracking-widest">05 // MANAGEMENT</span>
+                        <h3 class="font-serif text-xl text-white">Project & Construction Mgmt</h3>
+                        <p class="text-studio-muted text-xs font-light leading-relaxed">Independent project supervision, BOQ auditing, site quality verification, and contractor timeline enforcement.</p>
+                        <ul class="text-xs text-studio-muted font-mono space-y-1.5 pt-2 border-t border-white/10">
+                            <li>• Bill Quantity (BOQ) Audits</li>
+                            <li>• Site Quality Supervisions</li>
+                            <li>• Municipal Process Control</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Service 6 -->
+                <div class="gloss-panel gloss-panel-hover p-8 rounded-2xl space-y-5 flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <span class="text-xs font-mono text-studio-accent uppercase tracking-widest">06 // CRAFT</span>
+                        <h3 class="font-serif text-xl text-white">Material Sourcing & Custom Details</h3>
+                        <p class="text-studio-muted text-xs font-light leading-relaxed">Direct quarry slate sourcing, seasoned Sal wood procurement, hand-carved screens, and custom brass hardware fabrication.</p>
+                        <ul class="text-xs text-studio-muted font-mono space-y-1.5 pt-2 border-t border-white/10">
+                            <li>• Direct Regional Sourcing</li>
+                            <li>• Prototype Fabrication</li>
+                            <li>• Tactile Mockup Testing</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 4: LIBRARY -->
+    <section id="library" class="py-28 z-10 relative border-t border-white/10">
+        <div class="max-w-7xl mx-auto px-6 space-y-12">
+            <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-white/10 pb-8">
+                <div class="space-y-2 max-w-xl">
+                    <span class="text-xs font-mono text-studio-accent tracking-widest uppercase">// Knowledge & Material Database</span>
+                    <h2 class="font-serif text-3xl sm:text-4xl text-white font-normal">Dravya Library</h2>
+                    <p class="text-studio-muted text-xs font-light">A practical, searchable database of material specifications, construction details, Nepalese building standards, and cost references.</p>
+                </div>
+
+                <!-- Library Search & Categories -->
+                <div class="space-y-3">
+                    <input type="text" id="lib-search" placeholder="Search specs, materials, NBC codes..." 
+                           class="w-full sm:w-80 bg-black/50 border border-white/15 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-studio-accent font-mono">
+                    
+                    <div id="library-tabs" class="flex flex-wrap gap-2 text-[10px] uppercase font-mono">
+                        <button class="lib-tab active gloss-btn text-black font-semibold px-3 py-1.5 rounded" data-lib="all">All Specs</button>
+                        <button class="lib-tab gloss-panel px-3 py-1.5 rounded text-studio-muted hover:text-white" data-lib="materials">Materials</button>
+                        <button class="lib-tab gloss-panel px-3 py-1.5 rounded text-studio-muted hover:text-white" data-lib="details">Construction Details</button>
+                        <button class="lib-tab gloss-panel px-3 py-1.5 rounded text-studio-muted hover:text-white" data-lib="standards">Codes & Standards</button>
+                        <button class="lib-tab gloss-panel px-3 py-1.5 rounded text-studio-muted hover:text-white" data-lib="costs">Cost References</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Database Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="library-grid">
+
+                <!-- Library Spec 1 -->
+                <div class="lib-card gloss-panel gloss-panel-hover p-6 rounded-2xl space-y-4 cursor-pointer" data-lib-cat="materials" onclick="openSpecModal('s1')">
+                    <div class="flex justify-between items-center text-[10px] font-mono text-studio-accent">
+                        <span>SPEC #DL-MAT-014</span>
+                        <span class="gloss-badge px-2 py-0.5 rounded">MATERIALS</span>
+                    </div>
+                    <h3 class="font-serif text-lg text-white">Gandaki Split-Face Slate Masonry</h3>
+                    <p class="text-xs text-studio-muted font-light">100mm regional dry slate walling spec engineered for passive thermal mass and moisture barriers.</p>
+                    <div class="p-3 bg-black/50 rounded-xl text-[11px] font-mono text-studio-muted space-y-1">
+                        <p><span class="text-white">Compressive:</span> 85 MPa</p>
+                        <p><span class="text-white">Thermal Mass:</span> R-3.8 / 100mm</p>
+                    </div>
+                </div>
+
+                <!-- Library Spec 2 -->
+                <div class="lib-card gloss-panel gloss-panel-hover p-6 rounded-2xl space-y-4 cursor-pointer" data-lib-cat="details" onclick="openSpecModal('s2')">
+                    <div class="flex justify-between items-center text-[10px] font-mono text-studio-accent">
+                        <span>SPEC #DL-DET-009</span>
+                        <span class="gloss-badge px-2 py-0.5 rounded">CONSTRUCTION DETAILS</span>
+                    </div>
+                    <h3 class="font-serif text-lg text-white">Mortise & Tenon Sal Wood Joinery</h3>
+                    <p class="text-xs text-studio-muted font-light">Traditional mortarless timber tie beam detail for seismic shear absorption in window frames.</p>
+                    <div class="p-3 bg-black/50 rounded-xl text-[11px] font-mono text-studio-muted space-y-1">
+                        <p><span class="text-white">Timber Grade:</span> Seasoned Shorea Robusta</p>
+                        <p><span class="text-white">Fastener:</span> Hand-pegged Hardwood Dowels</p>
+                    </div>
+                </div>
+
+                <!-- Library Spec 3 -->
+                <div class="lib-card gloss-panel gloss-panel-hover p-6 rounded-2xl space-y-4 cursor-pointer" data-lib-cat="standards" onclick="openSpecModal('s3')">
+                    <div class="flex justify-between items-center text-[10px] font-mono text-studio-accent">
+                        <span>SPEC #DL-STD-105</span>
+                        <span class="gloss-badge px-2 py-0.5 rounded">CODES & STANDARDS</span>
+                    </div>
+                    <h3 class="font-serif text-lg text-white">Nepal National Building Code (NBC 105:2020)</h3>
+                    <p class="text-xs text-studio-muted font-light">Seismic design parameters, ductile detailing, and shear wall ratios for residential structures.</p>
+                    <div class="p-3 bg-black/50 rounded-xl text-[11px] font-mono text-studio-muted space-y-1">
+                        <p><span class="text-white">Zone Factor (Z):</span> 1.0 (High Seismic)</p>
+                        <p><span class="text-white">Ductility Class:</span> High (HDC)</p>
+                    </div>
+                </div>
+
+                <!-- Library Spec 4 -->
+                <div class="lib-card gloss-panel gloss-panel-hover p-6 rounded-2xl space-y-4 cursor-pointer" data-lib-cat="costs" onclick="openSpecModal('s4')">
+                    <div class="flex justify-between items-center text-[10px] font-mono text-studio-accent">
+                        <span>SPEC #DL-CST-2026</span>
+                        <span class="gloss-badge px-2 py-0.5 rounded">COST REFERENCES</span>
+                    </div>
+                    <h3 class="font-serif text-lg text-white">Turnkey Residential Rate Benchmarks</h3>
+                    <p class="text-xs text-studio-muted font-light">Updated 2026 cost range estimations per sq. ft. for structural RCC vs hybrid stone-timber build.</p>
+                    <div class="p-3 bg-black/50 rounded-xl text-[11px] font-mono text-studio-muted space-y-1">
+                        <p><span class="text-white">Standard Structure:</span> NPR 4,800 - 5,500 / sq. ft.</p>
+                        <p><span class="text-white">Tactile Turnkey:</span> NPR 6,500 - 8,200 / sq. ft.</p>
+                    </div>
+                </div>
+
+                <!-- Library Spec 5 -->
+                <div class="lib-card gloss-panel gloss-panel-hover p-6 rounded-2xl space-y-4 cursor-pointer" data-lib-cat="materials" onclick="openSpecModal('s5')">
+                    <div class="flex justify-between items-center text-[10px] font-mono text-studio-accent">
+                        <span>SPEC #DL-MAT-033</span>
+                        <span class="gloss-badge px-2 py-0.5 rounded">MATERIALS</span>
+                    </div>
+                    <h3 class="font-serif text-lg text-white">Lime-Surkhi Plaster Matrix</h3>
+                    <p class="text-xs text-studio-muted font-light">Hydrated lime mixed with crushed terracotta dust for zero-VOC breathable interior walls.</p>
+                    <div class="p-3 bg-black/50 rounded-xl text-[11px] font-mono text-studio-muted space-y-1">
+                        <p><span class="text-white">Mix Ratio:</span> 1 Lime : 2 Surkhi : 0.5 Sand</p>
+                        <p><span class="text-white">Curing:</span> 21 Days Damp Cloth</p>
+                    </div>
+                </div>
+
+                <!-- Library Spec 6 -->
+                <div class="lib-card gloss-panel gloss-panel-hover p-6 rounded-2xl space-y-4 cursor-pointer" data-lib-cat="details" onclick="openSpecModal('s6')">
+                    <div class="flex justify-between items-center text-[10px] font-mono text-studio-accent">
+                        <span>SPEC #DL-DET-021</span>
+                        <span class="gloss-badge px-2 py-0.5 rounded">CONSTRUCTION DETAILS</span>
+                    </div>
+                    <h3 class="font-serif text-lg text-white">Chowk Stack Ventilation Flue</h3>
+                    <p class="text-xs text-studio-muted font-light">Proportional section drawing for courtyard central ventilation drawn through ground louvers.</p>
+                    <div class="p-3 bg-black/50 rounded-xl text-[11px] font-mono text-studio-muted space-y-1">
+                        <p><span class="text-white">Air Change:</span> 14 ACH Passive Summer</p>
+                        <p><span class="text-white">Shading Ratio:</span> 1:1.5 Height-Width</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 5: JOURNAL -->
+    <section id="journal" class="py-28 z-10 relative border-t border-white/10">
+        <div class="max-w-7xl mx-auto px-6 space-y-12">
+            <div class="space-y-2 max-w-xl">
+                <span class="text-xs font-mono text-studio-accent tracking-widest uppercase">// Dravya Architectural Voice</span>
+                <h2 class="font-serif text-3xl sm:text-4xl text-white font-normal">Journal & Essays</h2>
+                <p class="text-studio-muted text-xs font-light">Site observations, design explorations, material experiments, and construction lessons.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <!-- Article 1 -->
+                <article class="gloss-panel gloss-panel-hover p-6 rounded-2xl space-y-4 flex flex-col justify-between group cursor-pointer" onclick="openJournalModal('j1')">
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center text-[10px] font-mono text-studio-accent">
+                            <span>ESSAY // 01</span>
+                            <span>SITE OBSERVATION</span>
+                        </div>
+                        <h3 class="font-serif text-xl text-white group-hover:text-studio-accent transition-colors">Why Rainscreen Slate Outperforms Synthetic Cladding in Monsoon</h3>
+                        <p class="text-xs text-studio-muted font-light leading-relaxed">Observations from 5 years of monitoring stone weathering in Pokhara high-precipitation microclimates.</p>
+                    </div>
+                    <div class="pt-4 border-t border-white/10 flex justify-between items-center text-xs font-mono text-studio-muted">
+                        <span>Read Essay →</span>
+                        <span>5 Min Read</span>
+                    </div>
+                </article>
+
+                <!-- Article 2 -->
+                <article class="gloss-panel gloss-panel-hover p-6 rounded-2xl space-y-4 flex flex-col justify-between group cursor-pointer" onclick="openJournalModal('j2')">
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center text-[10px] font-mono text-studio-accent">
+                            <span>ESSAY // 02</span>
+                            <span>NEPALESE ARCHITECTURE</span>
+                        </div>
+                        <h3 class="font-serif text-xl text-white group-hover:text-studio-accent transition-colors">The Aerodynamics of Newari Wooden Fenestration</h3>
+                        <p class="text-xs text-studio-muted font-light leading-relaxed">Testing the venturi air acceleration effect of hand-carved Aankhi-Jhyal screens in urban courtyards.</p>
+                    </div>
+                    <div class="pt-4 border-t border-white/10 flex justify-between items-center text-xs font-mono text-studio-muted">
+                        <span>Read Essay →</span>
+                        <span>7 Min Read</span>
+                    </div>
+                </article>
+
+                <!-- Article 3 -->
+                <article class="gloss-panel gloss-panel-hover p-6 rounded-2xl space-y-4 flex flex-col justify-between group cursor-pointer" onclick="openJournalModal('j3')">
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center text-[10px] font-mono text-studio-accent">
+                            <span>ESSAY // 03</span>
+                            <span>CONSTRUCTION LESSONS</span>
+                        </div>
+                        <h3 class="font-serif text-xl text-white group-hover:text-studio-accent transition-colors">Bridging Design Drawings and On-Site Fabrication</h3>
+                        <p class="text-xs text-studio-muted font-light leading-relaxed">How direct studio oversight prevents typical site errors and contractor misinterpretations.</p>
+                    </div>
+                    <div class="pt-4 border-t border-white/10 flex justify-between items-center text-xs font-mono text-studio-muted">
+                        <span>Read Essay →</span>
+                        <span>4 Min Read</span>
+                    </div>
+                </article>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 6: ABOUT -->
+    <section id="about" class="py-28 max-w-7xl mx-auto px-6 z-10 relative border-t border-white/10">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
+            <div class="lg:col-span-5 space-y-6 lg:sticky lg:top-28">
+                <span class="text-xs font-mono text-studio-accent tracking-widest uppercase">// Studio Identity</span>
+                <h2 class="font-serif text-3xl sm:text-4xl text-white font-normal leading-tight">
+                    Matter → Form → Space
+                </h2>
+                
+                <div class="gloss-panel p-6 rounded-2xl space-y-3">
+                    <p class="text-xs font-mono text-studio-accent uppercase tracking-widest">Origin of the Name</p>
+                    <p class="text-xs text-studio-muted font-light leading-relaxed">
+                        <strong class="text-white">Dravya</strong> (Sanskrit: <em>द्रव्य</em>) signifies elemental substance, foundational matter, or material reality. We believe space cannot exist without an honest understanding of the physical matter from which it is formed.
+                    </p>
+                </div>
+            </div>
+
+            <div class="lg:col-span-7 space-y-8 text-studio-muted text-sm font-light leading-relaxed">
+                <div class="space-y-4">
+                    <h3 class="font-serif text-xl text-white">Connecting Thinking with Making</h3>
+                    <p>
+                        Dravya was established to eliminate the disconnect between architectural drawing boards and construction sites. Rather than producing paper designs handed off to external contractors, we operate as a unified architectural and construction entity.
+                    </p>
+                    <p>
+                        Every project begins with a deep study of local context—seismic stability, natural lighting angles, regional soil bearing capacities, and local timber and stone reserves.
+                    </p>
+                </div>
+
+                <!-- Core Ideology Pillars -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-6 border-t border-white/10">
+                    <div class="space-y-2">
+                        <p class="font-serif text-white text-base text-studio-accent">✦ Physical Authenticity</p>
+                        <p class="text-xs">We do not hide materials behind synthetic coatings. Unadorned stone, structural timber, raw concrete, and lime plasters are celebrated.</p>
+                    </div>
+                    <div class="space-y-2">
+                        <p class="font-serif text-white text-base text-studio-accent">✦ Single Responsibility</p>
+                        <p class="text-xs">By integrating design with construction execution, we eliminate client budget overruns, design compromises, and contractor disputes.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 7: PROCESS -->
+    <section id="process" class="py-28 z-10 relative border-t border-white/10">
+        <div class="max-w-7xl mx-auto px-6 space-y-16">
+            <div class="max-w-2xl space-y-3">
+                <span class="text-xs font-mono text-studio-accent tracking-widest uppercase">// Step-by-Step Roadmap</span>
+                <h2 class="font-serif text-3xl sm:text-4xl text-white font-normal">Client Journey (01 → 08)</h2>
+                <p class="text-studio-muted text-xs font-light">Removing uncertainty. Here is exactly how Dravya transitions your idea into a physical built result.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                
+                <!-- Stage 01 -->
+                <div class="gloss-panel p-6 rounded-2xl space-y-3 relative">
+                    <div class="flex justify-between items-center text-studio-accent font-serif font-bold text-xl">
+                        <span>01</span>
+                        <span class="text-[9px] font-mono gloss-badge px-2 py-0.5 rounded">INITIATION</span>
+                    </div>
+                    <h3 class="font-serif text-base text-white">Inquiry & First Contact</h3>
+                    <p class="text-xs text-studio-muted font-light">Initial project evaluation, reviewing site location, land area, budget expectations, and target timelines.</p>
+                    <div class="pt-2 border-t border-white/10 text-[10px] font-mono text-studio-accent">
+                        <span>Deliverable:</span> Initial Feasibility Response
+                    </div>
+                </div>
+
+                <!-- Stage 02 -->
+                <div class="gloss-panel p-6 rounded-2xl space-y-3 relative">
+                    <div class="flex justify-between items-center text-studio-accent font-serif font-bold text-xl">
+                        <span>02</span>
+                        <span class="text-[9px] font-mono gloss-badge px-2 py-0.5 rounded">ANALYSIS</span>
+                    </div>
+                    <h3 class="font-serif text-base text-white">Brief & Site Study</h3>
+                    <p class="text-xs text-studio-muted font-light">On-site topographical survey, solar orientation mapping, soil tests, and establishing client functional requirements.</p>
+                    <div class="pt-2 border-t border-white/10 text-[10px] font-mono text-studio-accent">
+                        <span>Deliverable:</span> Project Brief & Site Analysis Report
+                    </div>
+                </div>
+
+                <!-- Stage 03 -->
+                <div class="gloss-panel p-6 rounded-2xl space-y-3 relative">
+                    <div class="flex justify-between items-center text-studio-accent font-serif font-bold text-xl">
+                        <span>03</span>
+                        <span class="text-[9px] font-mono gloss-badge px-2 py-0.5 rounded">IDEATION</span>
+                    </div>
+                    <h3 class="font-serif text-base text-white">Concept Design</h3>
+                    <p class="text-xs text-studio-muted font-light">Translating space needs into architectural massing, spatial layouts, 3D spatial volumes, and material directions.</p>
+                    <div class="pt-2 border-t border-white/10 text-[10px] font-mono text-studio-accent">
+                        <span>Deliverable:</span> Floorplans, 3D Renders, Material Palette
+                    </div>
+                </div>
+
+                <!-- Stage 04 -->
+                <div class="gloss-panel p-6 rounded-2xl space-y-3 relative">
+                    <div class="flex justify-between items-center text-studio-accent font-serif font-bold text-xl">
+                        <span>04</span>
+                        <span class="text-[9px] font-mono gloss-badge px-2 py-0.5 rounded">REFINEMENT</span>
+                    </div>
+                    <h3 class="font-serif text-base text-white">Design Development</h3>
+                    <p class="text-xs text-studio-muted font-light">Refining interior cabinetry, lighting temperature schedules, tactile mockups, and structural frame selections.</p>
+                    <div class="pt-2 border-t border-white/10 text-[10px] font-mono text-studio-accent">
+                        <span>Deliverable:</span> Detailed Interior & Material Specs
+                    </div>
+                </div>
+
+                <!-- Stage 05 -->
+                <div class="gloss-panel p-6 rounded-2xl space-y-3 relative">
+                    <div class="flex justify-between items-center text-studio-accent font-serif font-bold text-xl">
+                        <span>05</span>
+                        <span class="text-[9px] font-mono gloss-badge px-2 py-0.5 rounded">PERMITS</span>
+                    </div>
+                    <h3 class="font-serif text-base text-white">Documentation & NBC Filings</h3>
+                    <p class="text-xs text-studio-muted font-light">Preparing full structural, sanitary, electrical sets and submitting for municipal permit approval.</p>
+                    <div class="pt-2 border-t border-white/10 text-[10px] font-mono text-studio-accent">
+                        <span>Deliverable:</span> Municipal Approved Blueprints
+                    </div>
+                </div>
+
+                <!-- Stage 06 -->
+                <div class="gloss-panel p-6 rounded-2xl space-y-3 relative">
+                    <div class="flex justify-between items-center text-studio-accent font-serif font-bold text-xl">
+                        <span>06</span>
+                        <span class="text-[9px] font-mono gloss-badge px-2 py-0.5 rounded">TRANSPARENCY</span>
+                    </div>
+                    <h3 class="font-serif text-base text-white">Cost Estimation & BOQ</h3>
+                    <p class="text-xs text-studio-muted font-light">Itemized Bill of Quantities (BOQ), material rate breakups, labor schedules, and construction contract signing.</p>
+                    <div class="pt-2 border-t border-white/10 text-[10px] font-mono text-studio-accent">
+                        <span>Deliverable:</span> Final Fixed-Price Contract & BOQ
+                    </div>
+                </div>
+
+                <!-- Stage 07 -->
+                <div class="gloss-panel p-6 rounded-2xl space-y-3 relative border-studio-accent/30">
+                    <div class="flex justify-between items-center text-studio-accent font-serif font-bold text-xl">
+                        <span>07</span>
+                        <span class="text-[9px] font-mono gloss-badge px-2 py-0.5 rounded">EXECUTION</span>
+                    </div>
+                    <h3 class="font-serif text-base text-white">Construction & Crafting</h3>
+                    <p class="text-xs text-studio-muted font-light">Groundbreaking, foundation pour, structural frame, stone cladding installation, joinery, and quality inspection.</p>
+                    <div class="pt-2 border-t border-white/10 text-[10px] font-mono text-studio-accent">
+                        <span>Deliverable:</span> Physical Built Structure
+                    </div>
+                </div>
+
+                <!-- Stage 08 -->
+                <div class="gloss-panel p-6 rounded-2xl space-y-3 relative">
+                    <div class="flex justify-between items-center text-studio-accent font-serif font-bold text-xl">
+                        <span>08</span>
+                        <span class="text-[9px] font-mono gloss-badge px-2 py-0.5 rounded">COMPLETION</span>
+                    </div>
+                    <h3 class="font-serif text-base text-white">Handover & Maintenance</h3>
+                    <p class="text-xs text-studio-muted font-light">Final space snagging, deep cleaning, client walk-through, material maintenance manuals, and key handover.</p>
+                    <div class="pt-2 border-t border-white/10 text-[10px] font-mono text-studio-accent">
+                        <span>Deliverable:</span> Built Space Keys & Warranty Set
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 8: FAQ -->
+    <section id="faq" class="py-28 z-10 relative border-t border-white/10">
+        <div class="max-w-4xl mx-auto px-6 space-y-12">
+            <div class="text-center space-y-3">
+                <span class="text-xs font-mono text-studio-accent tracking-widest uppercase">// Practical Client Guidance</span>
+                <h2 class="font-serif text-3xl sm:text-4xl text-white font-normal">Frequently Asked Questions</h2>
+                <p class="text-studio-muted text-xs font-light">Clear answers on fees, project durations, municipal approvals, and design-build logistics.</p>
+            </div>
+
+            <div class="space-y-4">
+                
+                <!-- FAQ 1 -->
+                <div class="faq-item gloss-panel rounded-2xl p-6 cursor-pointer" onclick="toggleFaq(this)">
+                    <div class="flex justify-between items-center gap-4">
+                        <h3 class="font-serif text-base text-white">What is the difference between Design-Only and Design + Build?</h3>
+                        <span class="faq-icon text-studio-muted text-sm">▼</span>
+                    </div>
+                    <div class="faq-answer text-xs text-studio-muted font-light leading-relaxed pt-2">
+                        In a <strong>Design-Only</strong> engagement, Dravya acts purely as the architect, delivering full blueprint sets, structural drawings, and material schedules for you to tender out to independent third-party contractors.<br><br>
+                        In a <strong>Design + Build</strong> engagement, Dravya takes complete single-point responsibility for both designing the building and managing the physical construction, craftsmen, material procurement, and quality control on site.
+                    </div>
+                </div>
+
+                <!-- FAQ 2 -->
+                <div class="faq-item gloss-panel rounded-2xl p-6 cursor-pointer" onclick="toggleFaq(this)">
+                    <div class="flex justify-between items-center gap-4">
+                        <h3 class="font-serif text-base text-white">How are professional fees structured?</h3>
+                        <span class="faq-icon text-studio-muted text-sm">▼</span>
+                    </div>
+                    <div class="faq-answer text-xs text-studio-muted font-light leading-relaxed pt-2">
+                        Architectural design services are typically calculated as a fixed rate per square foot or a percentage (usually 5% - 8%) of the total estimated construction cost depending on scope complexity.<br><br>
+                        For Design + Build construction, costs are broken down into an itemized, transparent Bill of Quantities (BOQ) with fixed material and labor milestone payments.
+                    </div>
+                </div>
+
+                <!-- FAQ 3 -->
+                <div class="faq-item gloss-panel rounded-2xl p-6 cursor-pointer" onclick="toggleFaq(this)">
+                    <div class="flex justify-between items-center gap-4">
+                        <h3 class="font-serif text-base text-white">Does Dravya handle municipal permits and building approvals?</h3>
+                        <span class="faq-icon text-studio-muted text-sm">▼</span>
+                    </div>
+                    <div class="faq-answer text-xs text-studio-muted font-light leading-relaxed pt-2">
+                        Yes. We prepare complete structural calculations, floor plans, and elevation documentation aligned strictly with the Nepal National Building Code (NBC) and local municipal ward requirements for official building permit approval.
+                    </div>
+                </div>
+
+                <!-- FAQ 4 -->
+                <div class="faq-item gloss-panel rounded-2xl p-6 cursor-pointer" onclick="toggleFaq(this)">
+                    <div class="faq-header flex justify-between items-center gap-4">
+                        <h3 class="font-serif text-base text-white">What service areas does Dravya cover?</h3>
+                        <span class="faq-icon text-studio-muted text-sm">▼</span>
+                    </div>
+                    <div class="faq-answer text-xs text-studio-muted font-light leading-relaxed pt-2">
+                        Our primary studio operations and construction teams are based in <strong>Pokhara</strong> and <strong>Kathmandu</strong>. However, we accept select architectural design and master planning commissions throughout Nepal.
+                    </div>
+                </div>
+
+                <!-- FAQ 5 -->
+                <div class="faq-item gloss-panel rounded-2xl p-6 cursor-pointer" onclick="toggleFaq(this)">
+                    <div class="flex justify-between items-center gap-4">
+                        <h3 class="font-serif text-base text-white">What is the typical project duration from design to completion?</h3>
+                        <span class="faq-icon text-studio-muted text-sm">▼</span>
+                    </div>
+                    <div class="faq-answer text-xs text-studio-muted font-light leading-relaxed pt-2">
+                        • Architectural Design & Municipal Approval Phase: 6 to 10 Weeks.<br>
+                        • Residential Construction Execution: 8 to 14 Months (depending on area scale and weather seasons).
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 9: START A PROJECT / CONTACT -->
+    <section id="contact" class="py-28 z-10 relative border-t border-white/10">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-16">
+                
+                <!-- Contact Context -->
+                <div class="lg:col-span-5 space-y-8">
+                    <div class="space-y-3">
+                        <span class="text-xs font-mono text-studio-accent tracking-widest uppercase">// Project Inquiry</span>
+                        <h2 class="font-serif text-3xl sm:text-4xl text-white font-normal">Start a Project</h2>
+                        <p class="text-studio-muted text-xs font-light leading-relaxed">
+                            Fill out our structured project inquiry form below. Providing clear site details, budget targets, and timelines helps us evaluate project feasibility quickly.
+                        </p>
+                    </div>
+
+                    <div class="space-y-6 text-xs font-mono border-t border-white/10 pt-6">
+                        <div>
+                            <p class="text-studio-accent uppercase">Atelier Coordinates</p>
+                            <p class="text-white mt-1">Dravya Architecture & Build Studio</p>
+                            <p class="text-studio-muted">Lake Precinct, Pokhara & Kathmandu, Nepal</p>
+                        </div>
+
+                        <div>
+                            <p class="text-studio-accent uppercase">Direct Inquiries</p>
+                            <p class="text-white mt-1">inquire@dravya.arch</p>
+                            <p class="text-studio-muted">+977 (0)1 4200 112</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Structured Inquiry Form -->
+                <div class="lg:col-span-7 gloss-panel p-8 sm:p-10 rounded-2xl relative">
+                    <form id="project-form" class="space-y-6">
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label for="client-name" class="text-[10px] text-studio-muted uppercase font-mono tracking-wider">Client Name *</label>
+                                <input type="text" id="client-name" required placeholder="Full Name" 
+                                       class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-studio-accent font-mono">
+                            </div>
+                            <div class="space-y-2">
+                                <label for="client-email" class="text-[10px] text-studio-muted uppercase font-mono tracking-wider">Email Address *</label>
+                                <input type="email" id="client-email" required placeholder="email@domain.com" 
+                                       class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-studio-accent font-mono">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                            <div class="space-y-2">
+                                <label for="proj-type" class="text-[10px] text-studio-muted uppercase font-mono tracking-wider">Project Type *</label>
+                                <select id="proj-type" class="w-full bg-black/50 border border-white/10 rounded-xl px-3 py-3 text-xs text-white focus:outline-none focus:border-studio-accent font-mono">
+                                    <option class="bg-slate-900">Architecture (New Build)</option>
+                                    <option class="bg-slate-900">Design + Build Turnkey</option>
+                                    <option class="bg-slate-900">Interior Architecture</option>
+                                    <option class="bg-slate-900">Renovation / Retrofit</option>
+                                    <option class="bg-slate-900">Custom Details / Furniture</option>
+                                </select>
+                            </div>
+                            <div class="space-y-2">
+                                <label for="proj-location" class="text-[10px] text-studio-muted uppercase font-mono tracking-wider">Site / Location *</label>
+                                <input type="text" id="proj-location" required placeholder="City / District / Ward" 
+                                       class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-studio-accent font-mono">
+                            </div>
+                            <div class="space-y-2">
+                                <label for="proj-area" class="text-[10px] text-studio-muted uppercase font-mono tracking-wider">Approx. Area</label>
+                                <input type="text" id="proj-area" placeholder="e.g. 3,500 sq. ft / 1 Aana" 
+                                       class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-studio-accent font-mono">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label for="proj-budget" class="text-[10px] text-studio-muted uppercase font-mono tracking-wider">Target Budget Range (NPR)</label>
+                                <input type="text" id="proj-budget" placeholder="e.g. 1.5 Cr - 2.2 Cr" 
+                                       class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-studio-accent font-mono">
+                            </div>
+                            <div class="space-y-2">
+                                <label for="proj-timeline" class="text-[10px] text-studio-muted uppercase font-mono tracking-wider">Target Timeline</label>
+                                <input type="text" id="proj-timeline" placeholder="e.g. Break ground Q4 2026" 
+                                       class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-studio-accent font-mono">
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label for="proj-desc" class="text-[10px] text-studio-muted uppercase font-mono tracking-wider">Project Description & Brief *</label>
+                            <textarea id="proj-desc" rows="4" required placeholder="Describe spatial goals, living requirements, site conditions, preferred materials..." 
+                                      class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-studio-accent font-mono"></textarea>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-[10px] text-studio-muted uppercase font-mono tracking-wider">Existing Site Drawings / Photos Link</label>
+                            <input type="url" placeholder="Google Drive, Dropbox, or OneDrive URL" 
+                                   class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-studio-accent font-mono">
+                        </div>
+
+                        <button type="submit" id="submit-btn" class="w-full gloss-btn text-black py-4 text-xs font-semibold uppercase tracking-[0.2em] rounded-xl flex items-center justify-center gap-2">
+                            <span>Submit Project Inquiry</span>
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-white/10 py-10 z-10 relative">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-studio-muted font-mono">
+            <p>© <span id="year"></span> DRAVYA Architecture & Construction. All Rights Reserved.</p>
+            <div class="flex space-x-4 text-[10px] uppercase">
+                <a href="#home" class="hover:text-white">Top ↑</a>
+                <a href="#projects" class="hover:text-white">Works</a>
+                <a href="#library" class="hover:text-white">Library</a>
+                <a href="#process" class="hover:text-white">Process</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- INTERACTIVE MODAL 1: PROJECT DEMONSTRATION (Idea → Construction → Result) -->
+    <div id="project-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+        <div class="absolute inset-0 bg-black/85 backdrop-blur-md" onclick="closeProjectModal()"></div>
+        <div class="gloss-panel max-w-4xl w-full max-h-[90vh] overflow-y-auto rounded-2xl p-6 sm:p-8 relative z-10 space-y-6 text-xs font-sans">
+            <button onclick="closeProjectModal()" class="absolute top-6 right-6 text-studio-muted hover:text-white p-2 rounded-lg bg-white/5 border border-white/10 font-mono">✕ ESC</button>
+            
+            <div class="space-y-1">
+                <span id="p-modal-cat" class="text-[10px] font-mono text-studio-accent uppercase tracking-widest">CATEGORY</span>
+                <h3 id="p-modal-title" class="font-serif text-2xl text-white">Project Title</h3>
+                <p id="p-modal-sub" class="text-studio-muted font-mono text-[11px]">Location & Details</p>
+            </div>
+
+            <div class="aspect-video w-full overflow-hidden rounded-xl bg-black/50">
+                <img id="p-modal-img" src="" alt="Project Stage" class="w-full h-full object-cover">
+            </div>
+
+            <!-- Progression Tabs -->
+            <div class="space-y-3">
+                <p class="font-mono text-studio-accent text-[11px] uppercase tracking-wider">// Project Evolution (Idea → Construction → Result)</p>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center font-mono text-[10px]">
+                    <div class="gloss-panel p-3 rounded-lg"><span class="text-white block font-semibold">01 IDEA</span><span class="text-studio-muted text-[9px]">Concept & Massing</span></div>
+                    <div class="gloss-panel p-3 rounded-lg"><span class="text-white block font-semibold">02 DRAWINGS</span><span class="text-studio-muted text-[9px]">NBC Permit Set</span></div>
+                    <div class="gloss-panel p-3 rounded-lg"><span class="text-white block font-semibold">03 MATERIALS</span><span class="text-studio-muted text-[9px]">Slate & Timber Mockup</span></div>
+                    <div class="gloss-panel p-3 rounded-lg"><span class="text-white block font-semibold">04 BUILT</span><span class="text-studio-muted text-[9px]">On-Site Execution</span></div>
+                </div>
+            </div>
+
+            <p id="p-modal-desc" class="text-studio-muted leading-relaxed font-light"></p>
+        </div>
+    </div>
+
+    <!-- INTERACTIVE MODAL 2: LIBRARY SPEC DETAIL -->
+    <div id="spec-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+        <div class="absolute inset-0 bg-black/85 backdrop-blur-md" onclick="closeSpecModal()"></div>
+        <div class="gloss-panel max-w-2xl w-full rounded-2xl p-6 sm:p-8 relative z-10 space-y-6">
+            <button onclick="closeSpecModal()" class="absolute top-6 right-6 text-studio-muted hover:text-white p-2 rounded-lg bg-white/5 border border-white/10 font-mono">✕ ESC</button>
+            <div class="space-y-1">
+                <span id="s-modal-code" class="text-[10px] font-mono text-studio-accent tracking-widest">SPEC CODE</span>
+                <h3 id="s-modal-title" class="font-serif text-2xl text-white">Spec Title</h3>
+            </div>
+            <p id="s-modal-body" class="text-xs text-studio-muted font-light leading-relaxed"></p>
+            <div class="bg-black/60 p-4 rounded-xl border border-white/10 font-mono text-xs space-y-2">
+                <div class="flex justify-between text-studio-accent text-[10px]">
+                    <span>DRAVYA TECHNICAL SPECIFICATION BLOCK</span>
+                    <button onclick="copySpecCode()" class="gloss-badge px-2 py-0.5 rounded text-white hover:text-black">Copy Data</button>
+                </div>
+                <pre id="s-modal-block" class="text-slate-300 text-[11px] whitespace-pre-wrap"></pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 pointer-events-none space-y-2"></div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Data Registry
+        const projectsData = {
+            'p1': {
+                title: 'Courtyard Pavilion & Slate Mass',
+                sub: 'Pokhara Valley, Nepal • Turnkey Design-Build',
+                category: 'ARCHITECTURE & BUILD',
+                img: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80',
+                desc: 'Designed around a central open-air courtyard (chowk), this residence utilizes local split-face slate walls to establish passive thermal cooling during hot valley months and natural heat retention at night.'
+            },
+            'p2': {
+                title: 'Heritage Courtyard House Restoration',
+                sub: 'Lalitpur Heritage Core • Existing Timber Retrofit',
+                category: 'RENOVATION',
+                img: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80',
+                desc: 'Adaptive restoration of an urban residential courtyard. Replaced decayed tie beams with seasoned Sal wood while preserving 100-year-old load-bearing brickwork.'
+            },
+            'p3': {
+                title: 'Tactile Lime & Sal Wood Atelier',
+                sub: 'Kathmandu • Interior Design & Custom Furniture',
+                category: 'INTERIORS',
+                img: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1200&q=80',
+                desc: 'The workspace and material repository for Dravya. Designed with raw lime-surkhi plaster finishes, custom timber drafting tables, and integrated 2800K strip lighting.'
+            },
+            'p4': {
+                title: 'Carved Sal Joinery & Screen Details',
+                sub: 'Custom Crafting • Mortise & Tenon Assembly',
+                category: 'FURNITURE / DETAIL',
+                img: 'https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=1200&q=80',
+                desc: 'Hand-pegged mortise and tenon timber screens inspired by Newari Aankhi-Jhyal lattice patterns, providing privacy and venturi cooling.'
+            },
+            'p5': {
+                title: 'Lumbini Memorial Monolith',
+                sub: 'Lumbini Province • Concept & Structural Design',
+                category: 'CONCEPTS / CIVIC',
+                img: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80',
+                desc: 'A civic memorial featuring monolithic slate stone pillars interlocked with weathering steel ribbons.'
+            },
+            'p6': {
+                title: 'National Sports Academy Campus',
+                sub: 'Pokhara • Masterplan & Structural Layout',
+                category: 'ARCHITECTURE',
+                img: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80',
+                desc: 'Campus site layout and high-durability training facilities engineered for regional climate resilience.'
+            }
+        };
+
+        const specsData = {
+            's1': {
+                code: 'SPEC #DL-MAT-014',
+                title: 'Gandaki Split-Face Slate Masonry',
+                body: '100mm regional dry slate walling spec engineered for passive thermal mass and moisture barriers in humid climates.',
+                block: `[SPEC-DL-MAT-014]\nMaterial: Split Quarry Slate\nThickness: 100mm Outer Rainscreen\nCompressive Strength: 85 MPa\nAnchorage: Stainless Steel Grade 316 Pins`
+            },
+            's2': {
+                code: 'SPEC #DL-DET-009',
+                title: 'Mortise & Tenon Sal Wood Joinery',
+                body: 'Mortarless timber tie beam detail for seismic shear absorption across lintels and fenestrations.',
+                block: `[SPEC-DL-DET-009]\nMaterial: Shorea Robusta (Sal Timber)\nMoisture Content: < 12%\nJoinery: Mortise & Tenon with Hardwood Dowels\nSealant: Cold-Pressed Linseed Oil`
+            },
+            's3': {
+                code: 'SPEC #DL-STD-105',
+                title: 'Nepal National Building Code (NBC 105:2020)',
+                body: 'Seismic design parameters, ductile detailing, and shear wall ratios for residential reinforced concrete structures.',
+                block: `[SPEC-DL-STD-105]\nCode Basis: NBC 105:2020\nZone Factor Z: 1.0\nStructural Type: RCC Frame + Ductile Shear Walls`
+            },
+            's4': {
+                code: 'SPEC #DL-CST-2026',
+                title: 'Turnkey Residential Rate Benchmarks',
+                body: '2026 construction cost benchmarks per square foot for standard structural concrete vs hybrid tactile design-build.',
+                block: `[SPEC-DL-CST-2026]\nStandard RCC Construction: NPR 4,800 - 5,500 / sq. ft.\nTactile Turnkey Design-Build: NPR 6,500 - 8,200 / sq. ft.`
+            },
+            's5': {
+                code: 'SPEC #DL-MAT-033',
+                title: 'Lime-Surkhi Plaster Matrix',
+                body: 'Zero-VOC breathable plaster formulation combining hydrated lime and crushed terracotta dust for interior climate regulation.',
+                block: `[SPEC-DL-MAT-033]\nComposition: 1 Hydrated Lime : 2 Surkhi : 0.5 Fine Sand\nVOC: 0.0 Zero Emissions\nApplication: 3 Troweled Layers`
+            },
+            's6': {
+                code: 'SPEC #DL-DET-021',
+                title: 'Chowk Stack Ventilation Flue',
+                body: 'Proportional geometric guide for central courtyard voids to maximize natural stack air acceleration.',
+                block: `[SPEC-DL-DET-021]\nVoid Aspect Ratio: Width >= 1.5 * Height\nOverhang: 30° Eaves Protection\nAir Change Rate: 14 ACH Passive Summer`
+            }
+        };
+
+        const journalData = {
+            'j1': {
+                title: 'Why Rainscreen Slate Outperforms Synthetic Cladding in Monsoon',
+                body: 'In high-precipitation microclimates like Pokhara, synthetic facades often fail at panel joints. Quarry slate installed on a back-ventilated stainless clip system creates a thermal chimney behind the stone that evaporates moisture naturally before it reaches the building envelope.'
+            },
+            'j2': {
+                title: 'The Aerodynamics of Newari Wooden Fenestration',
+                body: 'The traditional Aankhi-Jhyal lattice is not purely ornamental. Its narrow, angled wooden aperture slots act as fluid nozzles, accelerating light exterior breezes into high-velocity indoor air streams through the Venturi effect.'
+            },
+            'j3': {
+                title: 'Bridging Design Drawings and On-Site Fabrication',
+                body: 'Site discrepancies usually occur during the handover between architects and independent contractors. By integrating execution directly into the studio process, drawings are generated alongside 1:1 physical joinery prototypes.'
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('year').textContent = new Date().getFullYear();
+
+            // Mobile Menu Toggle
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileBtn.addEventListener('click', () => {
+                const hidden = mobileMenu.classList.contains('hidden');
+                mobileMenu.classList.toggle('hidden', !hidden);
+                document.getElementById('menu-icon-open').classList.toggle('hidden', hidden);
+                document.getElementById('menu-icon-close').classList.toggle('hidden', !hidden);
+            });
+
+            document.querySelectorAll('.mobile-nav-link').forEach(l => {
+                l.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                    document.getElementById('menu-icon-open').classList.remove('hidden');
+                    document.getElementById('menu-icon-close').classList.add('hidden');
+                });
+            });
+
+            // Project Category Filters
+            const filterBtns = document.querySelectorAll('#project-filters .filter-btn');
+            const projectCards = document.querySelectorAll('.project-card');
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterBtns.forEach(b => {
+                        b.classList.remove('gloss-btn', 'text-black', 'font-semibold', 'active');
+                        b.classList.add('gloss-panel', 'text-studio-muted');
+                    });
+                    btn.classList.add('gloss-btn', 'text-black', 'font-semibold', 'active');
+                    btn.classList.remove('gloss-panel', 'text-studio-muted');
+
+                    const cat = btn.getAttribute('data-filter');
+                    projectCards.forEach(c => {
+                        if (cat === 'all' || c.getAttribute('data-category') === cat) {
+                            c.style.display = 'block';
+                        } else {
+                            c.style.display = 'none';
+                        }
+                    });
+                });
+            });
+
+            // Library Category Filters
+            const libTabs = document.querySelectorAll('#library-tabs .lib-tab');
+            const libCards = document.querySelectorAll('.lib-card');
+
+            libTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    libTabs.forEach(t => {
+                        t.classList.remove('gloss-btn', 'text-black', 'font-semibold', 'active');
+                        t.classList.add('gloss-panel', 'text-studio-muted');
+                    });
+                    tab.classList.add('gloss-btn', 'text-black', 'font-semibold', 'active');
+                    tab.classList.remove('gloss-panel', 'text-studio-muted');
+
+                    const cat = tab.getAttribute('data-lib');
+                    libCards.forEach(c => {
+                        if (cat === 'all' || c.getAttribute('data-lib-cat') === cat) {
+                            c.style.display = 'block';
+                        } else {
+                            c.style.display = 'none';
+                        }
+                    });
+                });
+            });
+
+            // Library Live Search
+            const libSearch = document.getElementById('lib-search');
+            libSearch.addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                libCards.forEach(card => {
+                    const text = card.textContent.toLowerCase();
+                    card.style.display = text.includes(term) ? 'block' : 'none';
+                });
+            });
+
+            // Form Submit
+            const form = document.getElementById('project-form');
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('submit-btn');
+                btn.disabled = true;
+                btn.innerHTML = `<span>Processing Inquiry...</span>`;
+
+                setTimeout(() => {
+                    form.reset();
+                    btn.disabled = false;
+                    btn.innerHTML = `<span>Submit Project Inquiry</span>`;
+                    showToast('Inquiry Received! Studio Dravya will contact you within 24 hours.');
+                }, 1000);
+            });
+        });
+
+        // FAQ Toggle
+        function toggleFaq(el) {
+            const isActive = el.classList.contains('active');
+            document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
+            if (!isActive) el.classList.add('active');
+        }
+
+        // Modals
+        function openProjectModal(id) {
+            const data = projectsData[id];
+            if (!data) return;
+            document.getElementById('p-modal-cat').textContent = data.category;
+            document.getElementById('p-modal-title').textContent = data.title;
+            document.getElementById('p-modal-sub').textContent = data.sub;
+            document.getElementById('p-modal-img').src = data.img;
+            document.getElementById('p-modal-desc').textContent = data.desc;
+
+            document.getElementById('project-modal').classList.remove('hidden');
+            document.body.classList.add('modal-open');
+        }
+
+        function closeProjectModal() {
+            document.getElementById('project-modal').classList.add('hidden');
+            document.body.classList.remove('modal-open');
+        }
+
+        function openSpecModal(id) {
+            const data = specsData[id];
+            if (!data) return;
+            document.getElementById('s-modal-code').textContent = data.code;
+            document.getElementById('s-modal-title').textContent = data.title;
+            document.getElementById('s-modal-body').textContent = data.body;
+            document.getElementById('s-modal-block').textContent = data.block;
+
+            document.getElementById('spec-modal').classList.remove('hidden');
+            document.body.classList.add('modal-open');
+        }
+
+        function closeSpecModal() {
+            document.getElementById('spec-modal').classList.add('hidden');
+            document.body.classList.remove('modal-open');
+        }
+
+        function openJournalModal(id) {
+            const data = journalData[id];
+            if (!data) return;
+            openSpecModal('s1'); // Reuses clean modal layout for reading
+            document.getElementById('s-modal-code').textContent = 'ESSAY READ';
+            document.getElementById('s-modal-title').textContent = data.title;
+            document.getElementById('s-modal-body').textContent = data.body;
+            document.getElementById('s-modal-block').textContent = `DRAVYA ESSAY ARCHIVE // AUTHOR: STUDIO DRAVYA`;
+        }
+
+        function copySpecCode() {
+            const code = document.getElementById('s-modal-block').textContent;
+            navigator.clipboard.writeText(code).then(() => showToast('Spec data copied to clipboard!'));
+        }
+
+        function showToast(msg) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'gloss-panel px-5 py-3 rounded-xl text-xs text-white flex items-center gap-3 border border-studio-accent/40 shadow-2xl transition-all duration-300';
+            toast.innerHTML = `<span class="w-2 h-2 rounded-full bg-studio-accent animate-ping"></span><span>${msg}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3500);
+        }
+    </script>
+</body>
+</html>
