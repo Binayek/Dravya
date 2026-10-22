@@ -1,0 +1,1 @@
+export default function Soon({params}:{params:{section:string}}){return <div><h1 className="font-serif text-2xl capitalize">{params.section}</h1><p className="text-muted mt-2 text-sm">This section is built in a later phase.</p></div>}

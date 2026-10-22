@@ -1,0 +1,13 @@
+@tailwind base;@tailwind components;@tailwind utilities;
+body{background:#08090C;color:#fff;font-family:'Plus Jakarta Sans',sans-serif}
+.field{display:flex;align-items:center;background:#0d0d0f;border:1px solid #2d2d2d;border-radius:10px;padding:2px 16px;margin-bottom:18px;transition:.2s}
+.field input{width:100%;background:transparent;border:0;outline:0;padding:12px 0;color:#fff;font-size:15px}
+.field:focus-within{border-color:#c9a86a!important;box-shadow:0 0 15px rgba(201,168,106,.35)!important}
+.field.error{border-color:#ff4d4d;box-shadow:0 0 15px rgba(255,77,77,.4)}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}50%{transform:translateX(8px)}75%{transform:translateX(-8px)}}
+.shake{animation:shake .4s}
+.inp{width:100%;background:#0d0d0f;border:1px solid #2d2d2d;border-radius:8px;padding:9px 12px;font-size:13px;outline:0}
+.inp:focus{border-color:#D4AF37}
+.btn-gold{background:linear-gradient(135deg,#E5C158,#D4AF37 50%,#A6831A);color:#000;font-weight:600;border-radius:10px;padding:10px 18px;font-size:13px}
+.btn-ghost{border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:10px 18px;font-size:13px}
+@media (prefers-reduced-motion:reduce){.shake{animation:none}}
